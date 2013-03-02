@@ -1,0 +1,3 @@
+[submodule "modules/async"]
+	path = modules/async
+	url = git@github.com:racker/luvit-async.git
