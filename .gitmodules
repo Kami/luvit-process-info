@@ -1,6 +1,6 @@
 [submodule "modules/async"]
 	path = modules/async
-	url = git@github.com:racker/luvit-async.git
+	url = https://github.com/racker/luvit-async
 [submodule "modules/bourbon"]
 	path = modules/bourbon
-	url = git@github.com:racker/luvit-bourbon.git
+	url = https://github.com/racker/luvit-bourbon
