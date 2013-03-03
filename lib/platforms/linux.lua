@@ -72,7 +72,8 @@ function ProcessInfo:getExe()
 end
 
 function ProcessInfo:getCmdline()
-  return self:_getProcFileContent('cmdline')
+  local data = self:_getProcFileContent('cmdline')
+  return self:_cleanLine(data)
 end
 
 function ProcessInfo:getEnviron()
@@ -107,12 +108,17 @@ end
 
 function ProcessInfo:_getProcFileContent(file)
   local filePath = path.join(self._procPath, file)
-  return self:_getFileContent(filePath)
+  local content = self:_getFileContent(filePath)
+  return content
 end
 
 function ProcessInfo:_getFileContent(filePath)
   local content = fs.readFileSync(filePath)
   return content
+end
+
+function ProcessInfo:_cleanLine(line)
+  return trim(line:gsub('%z', ''))
 end
 
 local exports = {}
