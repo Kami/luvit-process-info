@@ -30,7 +30,7 @@ local ProcessInfo = Object:extend()
 
 function ProcessInfo:initialize(pid, options)
   assert(type(pid) == 'number', 'Pid must be a number')
-  assert(pid > 0, 'Pid mud be greater than 0')
+  assert(pid > 0, 'Pid must be greater than 0')
 
   options = options and options or {}
   local procPath = options.procPath and options.procPath or DEFAULT_PROC_PATH
