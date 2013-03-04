@@ -35,7 +35,14 @@ function ProcessScanner:getProcesses()
   for _, file in ipairs(files) do
     match = string.match(file, '%d+')
     if match then
-      table.insert(result, ProcessInfo:new(tonumber(file)))
+      -- Process can die when instantiate it
+      local status, pi = pcall(function()
+        return ProcessInfo:new(tonumber(file))
+      end)
+
+      if status then
+        table.insert(result, pi)
+      end
     end
   end
 
