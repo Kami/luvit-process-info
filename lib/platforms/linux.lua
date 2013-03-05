@@ -24,6 +24,7 @@ local async = require('async')
 
 local split = require('../util').split
 local trim = require('../util').trim
+local memoize = require('../memoize')
 
 local DEFAULT_PROC_PATH = '/proc/'
 local ProcessInfo = Object:extend()
@@ -57,23 +58,31 @@ function ProcessInfo:getPid()
 end
 
 function ProcessInfo:getPpid()
-  local status = self:_getStatus()
-  return tonumber(status['PPid'])
+  return memoize.memoizeOrGetFromCache('__ppid', self, function()
+    local status = self:_getStatus()
+    return tonumber(status['PPid'])
+  end)
 end
 
 function ProcessInfo:getCwd()
-  local filePath = path.join(self._procPath, 'cwd')
-  return fs.readlinkSync(filePath)
+  return memoize.memoizeOrGetFromCache('__cwd', self, function()
+    local filePath = path.join(self._procPath, 'cwd')
+    return fs.readlinkSync(filePath)
+  end)
 end
 
 function ProcessInfo:getExe()
-  local filePath = path.join(self._procPath, 'exe')
-  return fs.readlinkSync(filePath)
+  return memoize.memoizeOrGetFromCache('__exe', self, function()
+    local filePath = path.join(self._procPath, 'exe')
+    return fs.readlinkSync(filePath)
+  end)
 end
 
 function ProcessInfo:getCmdline()
-  local data = self:_getProcFileContent('cmdline')
-  return self:_cleanLine(data)
+  return memoize.memoizeOrGetFromCache('__cmdline', self, function()
+    local data = self:_getProcFileContent('cmdline')
+    return self:_cleanLine(data)
+  end)
 end
 
 function ProcessInfo:getEnviron()
