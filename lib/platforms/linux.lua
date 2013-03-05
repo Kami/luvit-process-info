@@ -54,8 +54,12 @@ ProcessInfo.meta.__tostring = function(self)
   return fmt('<ProcessInfo pid=%s>', self._pid)
 end
 
-function ProcessInfo:getAsTable(ignoreErrors)
+function ProcessInfo:getAsTable(keys, ignoreErrors)
   local values, result, status, value
+
+  if not keys then
+    keys = {'pid', 'ppid', 'exe', 'cwd', 'cmdline'}
+  end
 
   values = {
     ['pid'] = 'getPid',
@@ -67,7 +71,12 @@ function ProcessInfo:getAsTable(ignoreErrors)
 
   result = {}
 
-  for key, funcName in pairs(values) do
+  for _, key in ipairs(keys) do
+    if values[key] == nil then
+      error('Invalid key: ' .. key)
+    end
+
+    funcName = values[key]
     status, value = pcall(bind(self[funcName], self))
 
     if status then
