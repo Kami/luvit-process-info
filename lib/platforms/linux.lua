@@ -19,6 +19,7 @@ local fs = require('fs')
 local path = require('path')
 local string = require('string')
 local fmt = require('string').format
+local bind = require('utils').bind
 
 local async = require('async')
 
@@ -51,6 +52,34 @@ end
 
 ProcessInfo.meta.__tostring = function(self)
   return fmt('<ProcessInfo pid=%s>', self._pid)
+end
+
+function ProcessInfo:getAsTable(ignoreErrors)
+  local values, result, status, value
+
+  values = {
+    ['pid'] = 'getPid',
+    ['ppid'] = 'getPpid',
+    ['exe'] = 'getExe',
+    ['cwd'] = 'getCwd',
+    ['cmdline'] = 'getCmdline'
+  }
+
+  result = {}
+
+  for key, funcName in pairs(values) do
+    status, value = pcall(bind(self[funcName], self))
+
+    if status then
+      result[key] = value
+    else
+      if not ignoreErrors then
+        error(value)
+      end
+    end
+  end
+
+  return result
 end
 
 function ProcessInfo:getPid()
